@@ -1,31 +1,31 @@
 package test.storeManagement.controllers;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import test.storeManagement.dtos.ProductDto;
+import test.storeManagement.services.ProductsService;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("products")
 @Slf4j
+@AllArgsConstructor
 public class ProductsController {
+
+    ProductsService productsService;
 
     @GetMapping
     public List<ProductDto> getProducts() {
-        log.info("Entered get");
-        var result = Arrays.asList(ProductDto.builder()
-                .id(1)
-                .name("name1")
-                .build(),
-                ProductDto.builder()
-                        .id(2)
-                        .name("name2")
-                        .build());
+        return productsService.getProducts();
+    }
 
-        return result;
+    @GetMapping(value = "/{id}")
+    public ProductDto getProduct(@PathVariable long id) {
+        return productsService.getProduct(id);
     }
 }
