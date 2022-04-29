@@ -34,4 +34,9 @@ public class ProductsServiceImpl implements ProductsService {
 
         return result;
     }
+
+    @Override
+    public void createProduct(ProductDto product) {
+        log.info("Creating product: " + product);
+    }
 }
