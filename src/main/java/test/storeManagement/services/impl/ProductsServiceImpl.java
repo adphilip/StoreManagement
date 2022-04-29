@@ -1,6 +1,7 @@
 package test.storeManagement.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import test.storeManagement.dtos.ProductDto;
 import test.storeManagement.services.ProductsService;
@@ -12,6 +13,7 @@ import java.util.List;
 @Slf4j
 public class ProductsServiceImpl implements ProductsService {
     @Override
+    @PreAuthorize("hasRole('STANDARD')")
     public List<ProductDto> getProducts() {
         var result = Arrays.asList(ProductDto.builder()
                         .id(1)
@@ -26,6 +28,7 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
+    @PreAuthorize("hasRole('STANDARD')")
     public ProductDto getProduct(long id) {
         var result = ProductDto.builder()
                 .id(id)
@@ -36,6 +39,7 @@ public class ProductsServiceImpl implements ProductsService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void createProduct(ProductDto product) {
         log.info("Creating product: " + product);
     }
