@@ -1,28 +1,33 @@
 package test.storeManagement.services.impl;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import test.storeManagement.dataAccess.ProductsProvider;
 import test.storeManagement.dtos.ProductDto;
+import test.storeManagement.models.Product;
 import test.storeManagement.services.ProductsService;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class ProductsServiceImpl implements ProductsService {
+    private ProductsProvider productsProvider;
+
     @Override
     @PreAuthorize("hasRole('STANDARD')")
     public List<ProductDto> getProducts() {
-        var result = Arrays.asList(ProductDto.builder()
-                        .id(1)
-                        .name("name1")
-                        .build(),
-                ProductDto.builder()
-                        .id(2)
-                        .name("name2")
-                        .build());
+        var result = productsProvider.returnAllProducts()
+                .stream()
+                .map(p -> ProductDto.builder()
+                        .name(p.getName())
+                        .id(p.getId())
+                        .build())
+                .collect(Collectors.toList());
 
         return result;
     }
@@ -30,17 +35,26 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     @PreAuthorize("hasRole('STANDARD')")
     public ProductDto getProduct(long id) {
-        var result = ProductDto.builder()
-                .id(id)
-                .name("name" + id)
-                .build();
+        var product = productsProvider.findProduct(id);
 
-        return result;
+        if (product == null) {
+            return null;
+        }
+
+        return ProductDto.builder()
+                .name(product.getName())
+                .id(product.getId())
+                .build();
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void createProduct(ProductDto product) {
         log.info("Creating product: " + product);
+
+        productsProvider.createProduct(Product.builder()
+                        .name(product.getName())
+                        .id(product.getId())
+                        .build());
     }
 }
