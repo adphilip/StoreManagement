@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +19,5 @@ public class ProductDto implements Serializable {
 
     private long id;
     private String name;
+    private BigDecimal price;
 }

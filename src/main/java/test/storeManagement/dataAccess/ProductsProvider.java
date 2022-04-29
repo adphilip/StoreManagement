@@ -8,4 +8,5 @@ public interface ProductsProvider {
     Product findProduct(long id);
     List<Product> returnAllProducts();
     void createProduct(Product product);
+    void updateProduct(long id, Product product);
 }

@@ -26,6 +26,7 @@ public class ProductsServiceImpl implements ProductsService {
                 .map(p -> ProductDto.builder()
                         .name(p.getName())
                         .id(p.getId())
+                        .price(p.getPrice())
                         .build())
                 .collect(Collectors.toList());
 
@@ -44,6 +45,7 @@ public class ProductsServiceImpl implements ProductsService {
         return ProductDto.builder()
                 .name(product.getName())
                 .id(product.getId())
+                .price(product.getPrice())
                 .build();
     }
 
@@ -55,6 +57,17 @@ public class ProductsServiceImpl implements ProductsService {
         productsProvider.createProduct(Product.builder()
                         .name(product.getName())
                         .id(product.getId())
+                        .price(product.getPrice())
                         .build());
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateProduct(long id, ProductDto product) {
+        productsProvider.updateProduct(id, Product.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .build());
     }
 }

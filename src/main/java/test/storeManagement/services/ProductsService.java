@@ -8,4 +8,5 @@ public interface ProductsService {
     List<ProductDto> getProducts();
     ProductDto getProduct(long id);
     void createProduct(ProductDto product);
+    void updateProduct(long id, ProductDto product);
 }
