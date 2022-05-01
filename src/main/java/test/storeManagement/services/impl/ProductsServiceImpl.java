@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import test.storeManagement.dataAccess.ProductsProvider;
+import test.storeManagement.dataAccess.ProductsRepository;
 import test.storeManagement.dtos.ProductDto;
-import test.storeManagement.models.Product;
+import test.storeManagement.entities.ProductEntity;
 import test.storeManagement.services.ProductsService;
 
 import java.util.List;
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @AllArgsConstructor
 public class ProductsServiceImpl implements ProductsService {
-    private ProductsProvider productsProvider;
+    private ProductsRepository productsRepository;
 
     @Override
     @PreAuthorize("hasRole('STANDARD')")
     public List<ProductDto> getProducts() {
-        var result = productsProvider.returnAllProducts()
+        var result = productsRepository.findAll()
                 .stream()
                 .map(p -> ProductDto.builder()
                         .name(p.getName())
@@ -36,17 +36,13 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     @PreAuthorize("hasRole('STANDARD')")
     public ProductDto getProduct(long id) {
-        var product = productsProvider.findProduct(id);
+        var product = productsRepository.findById(id);
 
-        if (product == null) {
-            return null;
-        }
-
-        return ProductDto.builder()
-                .name(product.getName())
-                .id(product.getId())
-                .price(product.getPrice())
-                .build();
+        return product.map(p -> ProductDto.builder()
+                .name(p.getName())
+                .id(p.getId())
+                .price(p.getPrice())
+                .build()).orElse(null);
     }
 
     @Override
@@ -54,9 +50,8 @@ public class ProductsServiceImpl implements ProductsService {
     public void createProduct(ProductDto product) {
         log.info("Creating product: " + product);
 
-        productsProvider.createProduct(Product.builder()
+        productsRepository.save(ProductEntity.builder()
                         .name(product.getName())
-                        .id(product.getId())
                         .price(product.getPrice())
                         .build());
     }
@@ -64,10 +59,14 @@ public class ProductsServiceImpl implements ProductsService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void updateProduct(long id, ProductDto product) {
-        productsProvider.updateProduct(id, Product.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .build());
+        var existingEntityOptional = productsRepository.findById(id);
+
+        if (existingEntityOptional.isPresent()) {
+            var existingEntity = existingEntityOptional.get();
+            existingEntity.setPrice(product.getPrice());
+            existingEntity.setName(product.getName());
+
+            productsRepository.save(existingEntity);
+        }
     }
 }

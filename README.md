@@ -17,7 +17,4 @@ ADMIN user:
 user2
 password2
 
-I haven't implemented the provider class because I don't have a database server available.
-I would have implemented it with JPA, creating a ProductEntity class annotated with the necessary annotations 
-for retrieving from the database. I would have either added a new layer, for repositories, or it would
-have been easier to rename from Provider to Repository and use the existing class to retrieve from the database.
+I use an H2 in memory database which is prepopulated with three products

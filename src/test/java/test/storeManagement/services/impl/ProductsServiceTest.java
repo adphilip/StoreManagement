@@ -2,11 +2,12 @@ package test.storeManagement.services.impl;
 
 import org.junit.Assert;
 import org.junit.Test;
-import test.storeManagement.dataAccess.ProductsProvider;
-import test.storeManagement.models.Product;
+import test.storeManagement.dataAccess.ProductsRepository;
+import test.storeManagement.entities.ProductEntity;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,20 +15,20 @@ import static org.mockito.Mockito.when;
 public class ProductsServiceTest {
     @Test
     public void getAllProductsTest() {
-        var productsProviderMock = mock(ProductsProvider.class);
+        var productsRepositoryMock = mock(ProductsRepository.class);
 
-        when(productsProviderMock.returnAllProducts()).thenReturn(Arrays.asList(Product.builder()
-                        .id(1)
+        when(productsRepositoryMock.findAll()).thenReturn(Arrays.asList(ProductEntity.builder()
+                        .id(1L)
                         .name("name1")
                         .price(BigDecimal.valueOf(133))
                         .build(),
-                Product.builder()
-                        .id(2)
+                ProductEntity.builder()
+                        .id(2L)
                         .name("name2")
                         .price(BigDecimal.valueOf(89))
                         .build()));
 
-        var productsService = new ProductsServiceImpl(productsProviderMock);
+        var productsService = new ProductsServiceImpl(productsRepositoryMock);
 
         var result = productsService.getProducts();
         Assert.assertEquals(2, result.size());
@@ -39,31 +40,31 @@ public class ProductsServiceTest {
 
     @Test
     public void getProductTest() {
-        var productsProviderMock = mock(ProductsProvider.class);
+        var productsRepositoryMock = mock(ProductsRepository.class);
 
-        var testProduct = Product.builder()
-                .id(4)
+        var testProduct = ProductEntity.builder()
+                .id(4L)
                 .name("name4")
                 .price(BigDecimal.valueOf(4))
                 .build();
-        when(productsProviderMock.findProduct(4)).thenReturn(testProduct);
+        when(productsRepositoryMock.findById(4L)).thenReturn(Optional.of(testProduct));
 
-        var productsService = new ProductsServiceImpl(productsProviderMock);
+        var productsService = new ProductsServiceImpl(productsRepositoryMock);
 
         var product = productsService.getProduct(4);
 
-        Assert.assertEquals(testProduct.getId(), product.getId());
+        Assert.assertEquals((long)testProduct.getId(), product.getId());
         Assert.assertEquals(testProduct.getName(), product.getName());
         Assert.assertEquals(testProduct.getPrice(), product.getPrice());
     }
 
     @Test
     public void getProductWithNullTest() {
-        var productsProviderMock = mock(ProductsProvider.class);
+        var productsRepositoryMock = mock(ProductsRepository.class);
 
-        when(productsProviderMock.findProduct(4)).thenReturn(null);
+        when(productsRepositoryMock.findById(4L)).thenReturn(Optional.empty());
 
-        var productsService = new ProductsServiceImpl(productsProviderMock);
+        var productsService = new ProductsServiceImpl(productsRepositoryMock);
 
         var product = productsService.getProduct(4);
 
